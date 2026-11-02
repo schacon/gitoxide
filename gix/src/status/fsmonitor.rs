@@ -13,6 +13,9 @@ use std::collections::HashSet;
 
 use crate::bstr::{BStr, BString, ByteSlice};
 
+/// Indices with fewer entries are faster to check without asking the daemon.
+const MIN_INDEX_ENTRIES: usize = 2000;
+
 /// The result of a successful fsmonitor query.
 pub(crate) struct Refreshed {
     /// A copy of the index with `FSMONITOR_VALID` set on all entries known to be unchanged.
@@ -33,6 +36,11 @@ pub(crate) fn refresh(repo: &crate::Repository, index: &gix_index::File) -> Opti
     }
     let use_untracked_cache = mode.as_deref() != Some("tracked".as_ref());
     if !matches!(repo.config.resolved.boolean("core.fsmonitor"), Ok(Some(true))) {
+        return None;
+    }
+    // Asking the daemon costs a round trip in which it syncs with the filesystem's event stream,
+    // about 10ms on macOS, which is more than checking a small index takes.
+    if index.entries().len() < MIN_INDEX_ENTRIES {
         return None;
     }
     let fsmonitor = index.fs_monitor()?;
