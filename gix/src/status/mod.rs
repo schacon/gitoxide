@@ -1,5 +1,7 @@
 pub use gix_status as plumbing;
 
+mod fsmonitor;
+
 use crate::{Repository, Result, config, config::cache::util::ApplyLeniencyDefault, util::OwnedOrStaticAtomicBool};
 
 /// A structure to hold options configuring the status request, which can then be turned into an iterator.

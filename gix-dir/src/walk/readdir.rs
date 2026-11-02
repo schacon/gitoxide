@@ -37,16 +37,39 @@ pub(super) fn recursive(
     if ctx.should_interrupt.is_some_and(|flag| flag.load(Ordering::Relaxed)) {
         bail!(cancelled("Interrupted"));
     }
-    out.read_dir_calls += 1;
-    let entries = gix_fs::read_dir(current, opts.precompose_unicode)
-        .or_raise(|| message!("Failed to read the directory at \"{}\"", current.display()))?;
+    // Use the cached listing if this directory is known to be unchanged, saving a `read_dir()` call.
+    let cached = ctx
+        .cached_listing
+        .and_then(|listing| listing.directories.get(current_bstr.as_bstr()));
+    let entries: Vec<(std::ffi::OsString, Option<entry::Kind>)> = match cached {
+        Some(cached) => {
+            out.cached_dir_listings += 1;
+            let mut entries = Vec::with_capacity(cached.len());
+            for (name, kind) in cached {
+                let name = gix_path::from_bstr(name.as_bstr())
+                    .or_raise(|| message!("Cached directory entry '{name}' isn't a valid path"))?;
+                entries.push((name.into_owned().into_os_string(), Some(*kind)));
+            }
+            entries
+        }
+        None => {
+            out.read_dir_calls += 1;
+            let mut entries = Vec::new();
+            for entry in gix_fs::read_dir(current, opts.precompose_unicode)
+                .or_raise(|| message!("Failed to read the directory at \"{}\"", current.display()))?
+            {
+                let entry = entry
+                    .or_raise(|| message!("Could not obtain directory entry in root of '{}'", current.display()))?;
+                entries.push((entry.file_name().into_owned(), entry.file_type().ok().map(Into::into)));
+            }
+            entries
+        }
+    };
 
     let mut num_entries = 0;
     let mark = state.mark(may_collapse);
     let mut prevent_collapse = false;
-    for entry in entries {
-        let entry =
-            entry.or_raise(|| message!("Could not obtain directory entry in root of '{}'", current.display()))?;
+    for (file_name, file_kind) in entries {
         // Important to count right away, otherwise the directory could be seen as empty even though it's not.
         // That is, this should be independent of the kind.
         num_entries += 1;
@@ -55,16 +78,15 @@ pub(super) fn recursive(
         if prev_len != 0 {
             current_bstr.push(b'/');
         }
-        let file_name = entry.file_name();
-        current_bstr.extend_from_slice(gix_path::try_os_str_into_bstr(Cow::Borrowed(file_name.as_ref()))?.as_ref());
-        current.push(file_name);
+        current_bstr.extend_from_slice(gix_path::try_os_str_into_bstr(Cow::Borrowed(file_name.as_os_str()))?.as_ref());
+        current.push(&file_name);
 
         let mut info = classify::path(
             current,
             current_bstr,
             if prev_len == 0 { 0 } else { prev_len + 1 },
             None,
-            || entry.file_type().ok().map(Into::into),
+            || file_kind,
             opts,
             ctx,
         )?;

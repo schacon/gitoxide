@@ -360,6 +360,7 @@ pub fn try_collect_filtered_opts(
             objects: &gix_object::find::Never,
             explicit_traversal_root,
             should_interrupt,
+            cached_listing: None,
         },
     )
 }

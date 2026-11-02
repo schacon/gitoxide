@@ -40,9 +40,18 @@ where
     /// degrading performance for everyone who isn't order-dependent.
     #[doc(alias = "diff_index_to_workdir", alias = "git2")]
     pub fn into_iter(self, patterns: impl IntoIterator<Item = BString>) -> Result<Iter> {
-        let index = match self.index {
-            None => IndexPersistedOrInMemory::Persisted(self.repo.index_or_empty()?),
-            Some(index) => index,
+        let (index, cached_listing) = match self.index {
+            None => {
+                let index = self.repo.index_or_empty()?;
+                match crate::status::fsmonitor::refresh(self.repo, &index) {
+                    Some(refreshed) => (
+                        IndexPersistedOrInMemory::InMemory(refreshed.index),
+                        refreshed.cached_listing,
+                    ),
+                    None => (IndexPersistedOrInMemory::Persisted(index), None),
+                }
+            }
+            Some(index) => (index, None),
         };
 
         let obtain_tree_id = || -> Result<Option<gix_hash::ObjectId>> {
@@ -122,7 +131,7 @@ where
                     let mut progress = self.progress;
                     move || -> Result<_> {
                         let repo = repo.to_thread_local();
-                        let out = repo.index_worktree_status(
+                        let out = repo.index_worktree_status_with_cached_listing(
                             &index,
                             patterns,
                             &mut collect,
@@ -131,6 +140,7 @@ where
                             &mut progress,
                             &should_interrupt,
                             options,
+                            cached_listing.as_ref(),
                         )?;
                         Ok(Outcome {
                             index_worktree: out,
@@ -185,7 +195,7 @@ where
                 }
                 None => (Vec::new(), None),
             };
-            let out = repo.index_worktree_status(
+            let out = repo.index_worktree_status_with_cached_listing(
                 &index,
                 patterns,
                 &mut collect,
@@ -194,6 +204,7 @@ where
                 &mut progress,
                 &should_interrupt,
                 options,
+                cached_listing.as_ref(),
             )?;
             let mut iter = Iter {
                 items: Vec::new().into_iter(),

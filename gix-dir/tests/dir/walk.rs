@@ -94,6 +94,7 @@ fn one_top_level_fifo() {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 2,
         }
@@ -126,6 +127,7 @@ fn fifo_in_traversal() {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         }
@@ -162,6 +164,7 @@ fn symlink_to_dir_can_be_excluded() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 9,
         }
@@ -197,6 +200,7 @@ fn symlink_to_dir_can_be_excluded() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 9,
         }
@@ -304,6 +308,7 @@ fn assume_unchanged_submodule_replaced_with_symlink_is_hidden() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         }
@@ -334,6 +339,7 @@ fn submodule_replaced_with_symlink_without_assume_unchanged_is_untracked() -> Te
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         }
@@ -377,6 +383,7 @@ fn empty_root() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -402,6 +409,7 @@ fn empty_root() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -422,6 +430,7 @@ fn complex_empty() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 9,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         }
@@ -453,6 +462,7 @@ fn complex_empty() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 9,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         }
@@ -479,6 +489,7 @@ fn complex_empty() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 9,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 9,
         }
@@ -540,6 +551,7 @@ fn ignored_with_prefix_pathspec_collapses_just_like_untracked() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 6,
         }
@@ -573,6 +585,7 @@ fn ignored_with_prefix_pathspec_collapses_just_like_untracked() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 4,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 8,
         }
@@ -613,6 +626,7 @@ fn ignored_collapse_of_empty_directories_is_not_classified_as_empty_directory() 
         out,
         walk::Outcome {
             read_dir_calls: 5,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 6,
         }
@@ -651,6 +665,7 @@ fn ignored_dir_with_cwd_handling() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         }
@@ -685,6 +700,7 @@ fn ignored_dir_with_cwd_handling() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 2,
         }
@@ -720,6 +736,7 @@ fn ignored_dir_with_cwd_handling() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 8,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 26
         }
@@ -764,6 +781,7 @@ fn ignored_with_cwd_handling() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         }
@@ -799,6 +817,7 @@ fn ignored_with_cwd_handling() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 5,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 7,
         }
@@ -843,6 +862,7 @@ fn only_untracked_with_cwd_handling() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 9,
         }
@@ -881,6 +901,7 @@ fn only_untracked_with_cwd_handling() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         }
@@ -915,6 +936,7 @@ fn only_untracked_with_cwd_handling() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 8,
         }
@@ -955,6 +977,7 @@ fn only_untracked_with_cwd_handling() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 4,
         }
@@ -997,6 +1020,7 @@ fn only_untracked_with_pathspec() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         }
@@ -1029,6 +1053,7 @@ fn only_untracked_with_pathspec() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         }
@@ -1061,6 +1086,7 @@ fn only_untracked_with_prefix_deletion() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         }
@@ -1087,6 +1113,7 @@ fn only_untracked_with_prefix_deletion() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         }
@@ -1107,6 +1134,7 @@ fn only_untracked() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 7,
         }
@@ -1129,6 +1157,7 @@ fn only_untracked() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         }
@@ -1157,6 +1186,7 @@ fn only_untracked() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 7 + 2,
         },
@@ -1197,6 +1227,7 @@ fn only_untracked_explicit_pathspec_selection() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         },
@@ -1231,6 +1262,7 @@ fn only_untracked_explicit_pathspec_selection() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         },
@@ -1267,6 +1299,7 @@ fn only_untracked_explicit_pathspec_selection() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 2 + 3,
         },
@@ -1288,6 +1321,7 @@ fn expendable_and_precious() {
         out,
         walk::Outcome {
             read_dir_calls: 6,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 18,
         }
@@ -1333,6 +1367,7 @@ fn expendable_and_precious() {
         out,
         walk::Outcome {
             read_dir_calls: 6,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 18 + 2,
         }
@@ -1378,6 +1413,7 @@ fn expendable_and_precious() {
         out,
         walk::Outcome {
             read_dir_calls: 6,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 16 + 2,
         }
@@ -1401,6 +1437,7 @@ fn subdir_untracked() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 7,
         }
@@ -1420,6 +1457,7 @@ fn subdir_untracked() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 7,
         },
@@ -1442,6 +1480,7 @@ fn subdir_untracked() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 7 + 1,
         },
@@ -1460,6 +1499,7 @@ fn only_untracked_from_subdir() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -1497,6 +1537,7 @@ fn untracked_and_ignored_pathspec_guidance() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 1,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 1,
             },
@@ -1537,6 +1578,7 @@ fn untracked_and_ignored_for_deletion_negative_wildcard_spec() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 5,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 23,
         },
@@ -1592,6 +1634,7 @@ fn untracked_and_ignored_for_deletion_positive_wildcard_spec() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 8,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 27,
         },
@@ -1645,6 +1688,7 @@ fn untracked_and_ignored_for_deletion_nonmatching_wildcard_spec() -> TestResult 
         out,
         walk::Outcome {
             read_dir_calls: 8,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 28,
         },
@@ -1791,6 +1835,7 @@ fn expendable_and_precious_in_ignored_dir_with_pathspec() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         },
@@ -1833,6 +1878,7 @@ fn expendable_and_precious_in_ignored_dir_with_pathspec() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 9,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 19,
         },
@@ -1887,6 +1933,7 @@ fn expendable_and_precious_in_ignored_dir_with_pathspec() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 9,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 19,
         },
@@ -1935,6 +1982,7 @@ fn untracked_and_ignored() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 5,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 21,
         },
@@ -1981,6 +2029,7 @@ fn untracked_and_ignored() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 5,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 21,
         },
@@ -2013,6 +2062,7 @@ fn untracked_and_ignored() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 5,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 21 + 1,
         },
@@ -2039,6 +2089,7 @@ fn untracked_and_ignored() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 5,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 21 + 2,
         },
@@ -2081,6 +2132,7 @@ fn untracked_and_ignored() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 5,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 21 + 3,
         },
@@ -2136,6 +2188,7 @@ fn untracked_and_ignored_collapse_handling_mixed() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 4,
         },
@@ -2174,6 +2227,7 @@ fn untracked_and_ignored_collapse_handling_mixed() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 4,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 21,
             },
@@ -2225,6 +2279,7 @@ fn untracked_and_ignored_collapse_handling_mixed_with_prefix() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 11
         },
@@ -2266,6 +2321,7 @@ fn untracked_and_ignored_collapse_handling_mixed_with_prefix() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 2,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 6,
             },
@@ -2317,6 +2373,7 @@ fn untracked_and_ignored_collapse_handling_for_deletion_with_wildcards() -> Test
         out,
         walk::Outcome {
             read_dir_calls: 8,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 26
         },
@@ -2363,6 +2420,7 @@ fn untracked_and_ignored_collapse_handling_for_deletion_with_wildcards() -> Test
         out,
         walk::Outcome {
             read_dir_calls: 8,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 28
         },
@@ -2420,6 +2478,7 @@ fn untracked_and_ignored_collapse_handling_for_deletion_with_prefix_wildcards() 
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 2,
         },
@@ -2452,6 +2511,7 @@ fn untracked_and_ignored_collapse_handling_for_deletion_mixed() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 5,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 21,
         },
@@ -2481,6 +2541,7 @@ fn untracked_and_ignored_collapse_handling_for_deletion_mixed() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 5,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 24,
         },
@@ -2529,6 +2590,7 @@ fn untracked_and_ignored_collapse_handling_for_deletion_mixed() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 6,
         },
@@ -2577,6 +2639,7 @@ fn untracked_and_ignored_collapse_handling_for_deletion_mixed() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         },
@@ -2616,6 +2679,7 @@ fn untracked_and_ignored_collapse_handling_for_deletion_mixed() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         },
@@ -2653,6 +2717,7 @@ fn untracked_and_ignored_collapse_handling_for_deletion_mixed() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 6,
         },
@@ -2692,6 +2757,7 @@ fn untracked_and_ignored_collapse_handling_for_deletion_mixed() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 4,
         },
@@ -2752,6 +2818,7 @@ fn precious_are_not_expendable() {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 10,
         },
@@ -2794,6 +2861,7 @@ fn precious_are_not_expendable() {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 10,
         },
@@ -2833,6 +2901,7 @@ fn precious_are_not_expendable() {
             out,
             walk::Outcome {
                 read_dir_calls: 2,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 7,
             },
@@ -2868,6 +2937,7 @@ fn precious_are_not_expendable() {
         out,
         walk::Outcome {
             read_dir_calls: 3,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 9,
         },
@@ -2916,6 +2986,7 @@ fn decomposed_unicode_in_directory_is_returned_precomposed() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -2942,6 +3013,7 @@ fn decomposed_unicode_in_directory_is_returned_precomposed() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         },
@@ -2976,6 +3048,7 @@ fn worktree_root_can_be_symlink() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -3000,6 +3073,7 @@ fn root_may_not_go_through_dot_git() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 0,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 1,
             }
@@ -3045,6 +3119,7 @@ fn root_at_submodule_repository_allows_walk() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         }
@@ -3086,6 +3161,7 @@ fn root_in_submodule_repository_allows_walk() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -3127,6 +3203,7 @@ fn root_in_submodule_from_superproject_repository_allows_walk() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -3168,6 +3245,7 @@ fn root_enters_directory_with_dot_git_in_reconfigured_worktree_tracked() -> Test
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -3202,6 +3280,7 @@ fn root_enters_directory_with_dot_git_in_reconfigured_worktree_tracked() -> Test
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: 0,
             seen_entries: 1,
         }
@@ -3272,6 +3351,7 @@ fn root_may_not_go_through_nested_repository_unless_enabled() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -3300,6 +3380,7 @@ fn root_may_not_go_through_submodule() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         },
@@ -3321,6 +3402,7 @@ fn walk_with_submodule() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 4,
         }
@@ -3354,6 +3436,7 @@ fn root_that_is_tracked_file_is_returned() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -3383,6 +3466,7 @@ fn root_that_is_untracked_file_is_returned() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -3420,6 +3504,7 @@ fn root_can_be_pruned_early_with_pathspec() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -3441,6 +3526,7 @@ fn submodules() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         }
@@ -3626,6 +3712,7 @@ fn file_root_is_shown_if_pathspec_matches_exactly() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         },
@@ -3657,6 +3744,7 @@ fn root_that_is_tracked_and_ignored_is_considered_tracked() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1,
         }
@@ -3691,6 +3779,7 @@ fn root_with_dir_that_is_tracked_and_ignored() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 2,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 3,
             }
@@ -3732,6 +3821,7 @@ fn empty_and_nested_untracked() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 3,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 2,
             }
@@ -3762,6 +3852,7 @@ fn empty_and_nested_untracked() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 3,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 3,
             }
@@ -3808,6 +3899,7 @@ fn root_that_is_ignored_is_listed_for_files_and_directories() -> TestResult {
                 out,
                 walk::Outcome {
                     read_dir_calls: 0,
+                    cached_dir_listings: 0,
                     returned_entries: entries.len(),
                     seen_entries: 1,
                 }
@@ -3970,6 +4062,7 @@ fn nested_repos_in_ignored_directories() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 4,
         }
@@ -4001,6 +4094,7 @@ fn nested_repos_in_ignored_directories() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 4,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 6,
         }
@@ -4034,6 +4128,7 @@ fn nested_repos_in_ignored_directories() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 4,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 7,
         }
@@ -4092,6 +4187,7 @@ fn decomposed_unicode_in_root_is_returned_precomposed() -> TestResult {
                 out,
                 walk::Outcome {
                     read_dir_calls: 0,
+                    cached_dir_listings: 0,
                     returned_entries: entries.len(),
                     seen_entries: 1,
                 },
@@ -4182,6 +4278,7 @@ fn untracked_and_ignored_collapse_mix() {
         out,
         walk::Outcome {
             read_dir_calls: 4,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 7,
         }
@@ -4216,6 +4313,7 @@ fn untracked_and_ignored_collapse_mix() {
         out,
         walk::Outcome {
             read_dir_calls: 4,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 8,
         }
@@ -4250,6 +4348,7 @@ fn untracked_and_ignored_collapse_mix() {
         out,
         walk::Outcome {
             read_dir_calls: 4,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 8,
         }
@@ -4290,6 +4389,7 @@ fn root_cannot_pass_through_case_altered_capital_dot_git_if_case_insensitive() -
             out,
             walk::Outcome {
                 read_dir_calls: 0,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 1,
             }
@@ -4352,6 +4452,7 @@ fn partial_checkout_cone_and_non_one() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 0,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 1,
             }
@@ -4396,6 +4497,7 @@ fn type_mismatch() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         }
@@ -4437,6 +4539,7 @@ fn type_mismatch() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3 + 1,
         }
@@ -4482,6 +4585,7 @@ fn type_mismatch_ignore_case() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         }
@@ -4521,6 +4625,7 @@ fn type_mismatch_ignore_case() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3 + 1,
         }
@@ -4565,6 +4670,7 @@ fn type_mismatch_ignore_case_clash_dir_is_file() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 2,
         }
@@ -4606,6 +4712,7 @@ fn type_mismatch_ignore_case_clash_file_is_dir() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 2,
         }
@@ -4628,6 +4735,7 @@ fn top_level_slash_with_negations() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 2,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 5,
             }
@@ -4660,6 +4768,7 @@ fn top_level_slash_with_negations() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 2,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 5,
             }
@@ -4685,6 +4794,7 @@ fn subdir_slash_with_negations() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 3,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 5,
             }
@@ -4717,6 +4827,7 @@ fn subdir_slash_with_negations() -> TestResult {
             out,
             walk::Outcome {
                 read_dir_calls: 3,
+                cached_dir_listings: 0,
                 returned_entries: entries.len(),
                 seen_entries: 5,
             }
@@ -4741,6 +4852,7 @@ fn one_ignored_submodule() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 5,
         }
@@ -4765,6 +4877,7 @@ fn one_ignored_submodule() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 0,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 1
         }
@@ -4785,6 +4898,7 @@ fn ignored_sub_repo() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 1,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 3,
         }
@@ -4819,6 +4933,7 @@ fn ignored_sub_repo() -> TestResult {
                 out,
                 walk::Outcome {
                     read_dir_calls: 1,
+                    cached_dir_listings: 0,
                     returned_entries: entries.len(),
                     seen_entries: 3,
                 }
@@ -4844,6 +4959,7 @@ fn in_repo_worktree() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 4,
         }
@@ -4874,6 +4990,7 @@ fn in_repo_worktree() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 4,
         }
@@ -4900,6 +5017,7 @@ fn in_repo_hidden_worktree() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 4,
         }
@@ -4931,6 +5049,7 @@ fn in_repo_hidden_worktree() -> TestResult {
         out,
         walk::Outcome {
             read_dir_calls: 2,
+            cached_dir_listings: 0,
             returned_entries: entries.len(),
             seen_entries: 4,
         }
@@ -4969,6 +5088,7 @@ fn in_repo_hidden_worktree() -> TestResult {
                 out,
                 walk::Outcome {
                     read_dir_calls: 4,
+                    cached_dir_listings: 0,
                     returned_entries: entries.len(),
                     seen_entries: 5,
                 }

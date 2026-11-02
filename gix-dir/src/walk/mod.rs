@@ -197,6 +197,18 @@ pub struct Options<'a> {
     pub worktree_relative_worktree_dirs: Option<&'a BTreeSet<BString>>,
 }
 
+/// Directory contents known to be unchanged, for instance thanks to Git's untracked cache
+/// validated by a filesystem monitor.
+///
+/// Only entries that can matter to a walk that doesn't emit tracked or ignored entries are listed:
+/// untracked files and directories, and all sub-directories.
+#[derive(Debug, Default, Clone)]
+pub struct CachedListing {
+    /// Maps a worktree-relative directory path (empty for the root, `/` separated) to its entries,
+    /// each being a file name along with its kind.
+    pub directories: std::collections::HashMap<BString, Vec<(BString, crate::entry::Kind)>>,
+}
+
 /// All information that is required to perform a dirwalk, and classify paths properly.
 pub struct Context<'a> {
     /// If not `None`, it will be checked before entering any directory to trigger early interruption.
@@ -260,6 +272,9 @@ pub struct Context<'a> {
     ///
     /// If the `traversal_root` is not in the `worktree_root` passed to [walk()](crate::walk()).
     pub explicit_traversal_root: Option<&'a std::path::Path>,
+    /// If not `None`, directories listed here are known to be unchanged since the listing was recorded,
+    /// and their entries are taken from it instead of reading the directory from disk.
+    pub cached_listing: Option<&'a CachedListing>,
 }
 
 /// Additional information collected as outcome of [`walk()`](function::walk()).
@@ -267,6 +282,8 @@ pub struct Context<'a> {
 pub struct Outcome {
     /// The amount of calls to read the directory contents.
     pub read_dir_calls: u32,
+    /// The amount of directories whose entries were taken from a [`CachedListing`] instead of reading them.
+    pub cached_dir_listings: u32,
     /// The amount of returned entries provided to the callback. This number can be lower than `seen_entries`.
     pub returned_entries: usize,
     /// The amount of entries, prior to pathspecs filtering them out or otherwise excluding them.

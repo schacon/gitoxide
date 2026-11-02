@@ -129,6 +129,7 @@ pub(super) mod function {
                                             excludes: excludes.as_mut(),
                                             objects: &objects,
                                             explicit_traversal_root: Some(worktree),
+                                            cached_listing: dirwalk_ctx.cached_listing,
                                         },
                                         options,
                                         &mut collect,

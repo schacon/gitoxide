@@ -85,6 +85,41 @@ impl Repository {
         T: Send + Clone,
         U: Send + Clone,
     {
+        self.index_worktree_status_with_cached_listing(
+            index,
+            patterns,
+            delegate,
+            compare,
+            submodule,
+            progress,
+            should_interrupt,
+            options,
+            None,
+        )
+    }
+
+    /// Like [`index_worktree_status()`](Self::index_worktree_status()), but with directory listings known to be unchanged.
+    #[expect(clippy::too_many_arguments)]
+    pub(crate) fn index_worktree_status_with_cached_listing<'index, T, U>(
+        &self,
+        index: &'index gix_index::State,
+        patterns: impl IntoIterator<Item = impl AsRef<BStr>>,
+        delegate: &mut impl gix_status::index_as_worktree_with_renames::VisitEntry<
+            'index,
+            ContentChange = T,
+            SubmoduleStatus = U,
+        >,
+        compare: impl CompareBlobs<Output = T> + Send + Clone,
+        submodule: impl SubmoduleStatus<Output = U> + Send + Clone,
+        progress: &mut dyn gix_utils::progress::Progress,
+        should_interrupt: &AtomicBool,
+        options: Options,
+        cached_listing: Option<&gix_dir::walk::CachedListing>,
+    ) -> Result<gix_status::index_as_worktree_with_renames::Outcome>
+    where
+        T: Send + Clone,
+        U: Send + Clone,
+    {
         let _span = gix_trace::coarse!("gix::index_worktree_status");
         let workdir = self
             .workdir()
@@ -132,6 +167,7 @@ impl Repository {
                     git_dir_realpath: git_dir_realpath.as_path(),
                     current_dir: cwd,
                     ignore_case_index_lookup: accelerate_lookup.as_ref(),
+                    cached_listing,
                 },
             },
             gix_status::index_as_worktree_with_renames::Options {

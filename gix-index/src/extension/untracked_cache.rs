@@ -37,6 +37,115 @@ impl UntrackedCache {
     pub fn directories(&self) -> &[Directory] {
         &self.directories
     }
+
+    /// Mark the cached data of every directory leading to `path` as invalid, like Git does when `path`
+    /// is added to or removed from the index.
+    pub fn invalidate_path(&mut self, path: &bstr::BStr) {
+        let mut dir_idx = 0;
+        let mut components = path.split(|b| *b == b'/').peekable();
+        loop {
+            let Some(dir) = self.directories.get_mut(dir_idx) else { return };
+            dir.stat = None;
+            dir.untracked_entries.clear();
+            let Some(component) = components.next() else { return };
+            if components.peek().is_none() {
+                return;
+            }
+            let directories = &self.directories;
+            let Some(next) = directories[dir_idx]
+                .sub_directories
+                .iter()
+                .copied()
+                .find(|idx| directories.get(*idx).is_some_and(|d| d.name == component))
+            else {
+                return;
+            };
+            dir_idx = next;
+        }
+    }
+
+    /// Serialize this extension, including its header, to `out`, assuming `object_hash` is used for all hashes.
+    pub fn write_to(&self, mut out: impl std::io::Write, object_hash: gix_hash::Kind) -> std::io::Result<()> {
+        fn varint(out: &mut Vec<u8>, mut value: u64) {
+            let mut buf = [0_u8; 16];
+            let mut pos = buf.len() - 1;
+            buf[pos] = (value & 127) as u8;
+            value >>= 7;
+            while value != 0 {
+                value -= 1;
+                pos -= 1;
+                buf[pos] = 128 | (value & 127) as u8;
+                value >>= 7;
+            }
+            out.extend_from_slice(&buf[pos..]);
+        }
+        fn stat(out: &mut Vec<u8>, stat: Option<&entry::Stat>) {
+            let s = stat.copied().unwrap_or_default();
+            for v in [
+                s.ctime.secs,
+                s.ctime.nsecs,
+                s.mtime.secs,
+                s.mtime.nsecs,
+                s.dev,
+                s.ino,
+                s.uid,
+                s.gid,
+                s.size,
+            ] {
+                out.extend_from_slice(&v.to_be_bytes());
+            }
+        }
+        fn block(out: &mut Vec<u8>, dirs: &[Directory], idx: usize) {
+            let dir = &dirs[idx];
+            varint(out, dir.untracked_entries.len() as u64);
+            varint(out, dir.sub_directories.len() as u64);
+            out.extend_from_slice(&dir.name);
+            out.push(0);
+            for name in &dir.untracked_entries {
+                out.extend_from_slice(name);
+                out.push(0);
+            }
+            for &sub in &dir.sub_directories {
+                block(out, dirs, sub);
+            }
+        }
+        let null = ObjectId::null(object_hash);
+        let mut body = Vec::new();
+        varint(&mut body, self.identifier.len() as u64);
+        body.extend_from_slice(&self.identifier);
+        stat(&mut body, self.info_exclude.as_ref().map(|s| &s.stat));
+        stat(&mut body, self.excludes_file.as_ref().map(|s| &s.stat));
+        body.extend_from_slice(&self.dir_flags.to_be_bytes());
+        body.extend_from_slice(self.info_exclude.as_ref().map_or(null, |s| s.id).as_bytes());
+        body.extend_from_slice(self.excludes_file.as_ref().map_or(null, |s| s.id).as_bytes());
+        body.extend_from_slice(&self.exclude_filename_per_dir);
+        body.push(0);
+        varint(&mut body, self.directories.len() as u64);
+        if !self.directories.is_empty() {
+            block(&mut body, &self.directories, 0);
+            let bits = |f: &dyn Fn(&Directory) -> bool| {
+                gix_bitmap::ewah::Vec::from_bits(&self.directories.iter().map(f).collect::<Vec<_>>())
+                    .ok_or_else(|| std::io::Error::other("too many directories"))
+            };
+            bits(&|d| d.stat.is_some())?.write_to(&mut body)?;
+            bits(&|d| d.check_only)?.write_to(&mut body)?;
+            bits(&|d| d.exclude_file_oid.is_some())?.write_to(&mut body)?;
+            for dir in &self.directories {
+                if dir.stat.is_some() {
+                    stat(&mut body, dir.stat.as_ref());
+                }
+            }
+            for dir in &self.directories {
+                if let Some(id) = dir.exclude_file_oid {
+                    body.extend_from_slice(id.as_bytes());
+                }
+            }
+        }
+        body.push(0);
+        out.write_all(&SIGNATURE)?;
+        out.write_all(&u32::try_from(body.len()).map_err(std::io::Error::other)?.to_be_bytes())?;
+        out.write_all(&body)
+    }
 }
 
 /// A structure to track filesystem stat information along with an object id, linking a worktree file with what's in our ODB.

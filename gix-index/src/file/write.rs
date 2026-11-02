@@ -1,4 +1,4 @@
-use crate::{File, Version, write};
+use crate::{File, State, Version, extension, write};
 use gix_error::Result;
 
 impl File {
@@ -57,6 +57,7 @@ impl File {
         use gix_error::{ErrorExt, ResultExt, bail, message};
 
         let _span = gix_trace::detail!("gix_index::File::write()", path = ?self.path);
+        self.carry_over_fsmonitor_data();
         let mut lock = std::io::BufWriter::with_capacity(
             64 * 1024,
             gix_lock::File::acquire_to_update_resource(&self.path, gix_lock::acquire::Fail::Immediately, None, 0)
@@ -79,5 +80,84 @@ impl File {
         self.state.version = version;
         self.checksum = Some(digest);
         Ok(())
+    }
+}
+
+impl File {
+    /// If the index we are about to replace has Git's fsmonitor and untracked-cache extensions, carry them over
+    /// so the filesystem monitor keeps working for us and for Git.
+    fn carry_over_fsmonitor_data(&mut self) {
+        let Ok(data) = std::fs::read(&self.path) else {
+            return;
+        };
+        if !data.windows(4).any(|w| w == extension::fs_monitor::SIGNATURE) {
+            return;
+        }
+        let Ok((old, _)) = State::from_bytes(
+            &data,
+            filetime::FileTime::now(),
+            self.state.object_hash,
+            crate::decode::Options::default(),
+        ) else {
+            return;
+        };
+        self.carry_over_fsmonitor_data_from(&old);
+    }
+
+    /// Take Git's fsmonitor token and untracked cache over from `old`, the index this one replaces,
+    /// adjusted to this index's entries.
+    ///
+    /// An entry stays known-valid only if its path, stage, id, mode and stat are unchanged and it was
+    /// valid in `old`. Directories of paths that were added to or removed from the index lose their
+    /// cached untracked listing, like Git does it.
+    ///
+    /// [`write()`](Self::write()) does this with the index it overwrites. Call it before writing when
+    /// that index was already replaced by a tool that doesn't keep these extensions.
+    pub fn carry_over_fsmonitor_data_from(&mut self, old: &State) {
+        let Some(old_fsm) = old.fs_monitor() else {
+            return;
+        };
+        let mut old_dirty = vec![false; old.entries().len()];
+        old_fsm.entry_dirty().for_each_set_bit(|idx| {
+            if let Some(bit) = old_dirty.get_mut(idx) {
+                *bit = true;
+            }
+            Some(())
+        });
+        let new_dirty: Vec<bool> = self
+            .state
+            .entries()
+            .iter()
+            .map(|entry| {
+                old.entry_index_by_path_and_stage(entry.path(&self.state), entry.stage())
+                    .is_none_or(|idx| {
+                        let old_entry = &old.entries()[idx];
+                        old_dirty[idx]
+                            || old_entry.stat != entry.stat
+                            || old_entry.id != entry.id
+                            || old_entry.mode != entry.mode
+                    })
+            })
+            .collect();
+        let Some(entry_dirty) = gix_bitmap::ewah::Vec::from_bits(&new_dirty) else {
+            return;
+        };
+        self.state.fs_monitor = Some(extension::FsMonitor::new(old_fsm.token().clone(), entry_dirty));
+
+        self.state.untracked = old.untracked().cloned().map(|mut untracked| {
+            for entry in self.state.entries() {
+                let path = entry.path(&self.state);
+                if old.entry_index_by_path(path).is_err() {
+                    untracked.invalidate_path(path);
+                }
+            }
+            for entry in old.entries() {
+                let path = entry.path(&old);
+                if self.state.entry_index_by_path(path).is_err() {
+                    untracked.invalidate_path(path);
+                }
+            }
+            untracked
+        });
     }
 }
